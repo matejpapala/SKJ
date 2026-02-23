@@ -45,7 +45,8 @@ def redact(data, chars):
         redact("Hello world!", "lo")        # Hexxx wxrxd!
         redact("Secret message", "mse")     # Sxcrxt xxxxagx
     """
-    pass
+    chars_set = set(chars)
+    return "".join('x' if ch in chars_set else ch for ch in data)
 
 
 def count_words(data):
@@ -68,7 +69,14 @@ def count_words(data):
             'what': 1
         }
     """
-    pass
+    if data == "":
+        return {}
+
+    counts = {}
+    for word in data.split(" "):
+        counts[word] = counts.get(word, 0) + 1
+
+    return counts
 
 
 def bonus_fizzbuzz(num):
@@ -76,7 +84,7 @@ def bonus_fizzbuzz(num):
     Implement the `fizzbuzz` function.
     `if`, match-case and cycles are not allowed.
     """
-    pass
+    return ('Fizz' * (num % 3 == 0) + 'Buzz' * (num % 5 == 0)) or num
 
 
 def bonus_utf8(cp):
@@ -86,4 +94,28 @@ def bonus_utf8(cp):
         bonus_utf8(0x01) == [0x01]
         bonus_utf8(0x1F601) == [0xF0, 0x9F, 0x98, 0x81]
     """
-    pass
+    if cp < 0 or cp > 0x10FFFF:
+        raise ValueError("Invalid Unicode code point")
+    if 0xD800 <= cp <= 0xDFFF:
+        raise ValueError("Surrogate code points are not valid Unicode scalar values")
+
+    if cp <= 0x7F:
+        return [cp]
+    if cp <= 0x7FF:
+        return [
+            0xC0 | (cp >> 6),
+            0x80 | (cp & 0x3F)
+        ]
+    if cp <= 0xFFFF:
+        return [
+            0xE0 | (cp >> 12),
+            0x80 | ((cp >> 6) & 0x3F),
+            0x80 | (cp & 0x3F)
+        ]
+
+    return [
+        0xF0 | (cp >> 18),
+        0x80 | ((cp >> 12) & 0x3F),
+        0x80 | ((cp >> 6) & 0x3F),
+        0x80 | (cp & 0x3F)
+    ]
